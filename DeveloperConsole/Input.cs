@@ -17,41 +17,6 @@ namespace DeveloperConsole
         public int selectedIndex = 0;
         public int selectPastCommand = 0;
 
-        public int SelectedIndex
-        {
-            get
-            {
-                return selectedIndex;
-            }
-
-            set
-            {
-                if (selectedIndex >= inputText.Caption.Length) selectedIndex = inputText.Caption.Length;
-                else
-                {
-                    if (value >= 0) selectedIndex = value;
-                }
-            }
-        }
-
-        public int SelectPastCommand
-        {
-            get
-            {
-                return selectPastCommand;
-            }
-
-            set
-            {
-                if (selectPastCommand > Program.console.fullLog.Count) selectPastCommand = Program.console.fullLog.Count;
-                else
-                {
-                    if (value >= 0) selectPastCommand = value;
-                    else selectPastCommand = 0;
-                }
-            }
-        }
-
         public Input(Point position, float textSize = 0.3f)
         {
             this.inputText = new UIText(Program.emptyString, position, textSize);
@@ -87,7 +52,6 @@ namespace DeveloperConsole
             {
                 default:
                     break;
-
             }
         }
 
@@ -327,6 +291,41 @@ namespace DeveloperConsole
                 builder.Append(' ');
             }
             return builder.ToString();
+        }
+
+        public int SelectedIndex
+        {
+            get
+            {
+                return selectedIndex;
+            }
+
+            set
+            {
+                if (selectedIndex >= inputText.Caption.Length) selectedIndex = inputText.Caption.Length;
+                else
+                {
+                    if (value >= 0) selectedIndex = value;
+                }
+            }
+        }
+
+        public int SelectPastCommand
+        {
+            get
+            {
+                return selectPastCommand;
+            }
+
+            set
+            {
+                if (selectPastCommand > Program.console.fullLog.Count) selectPastCommand = Program.console.fullLog.Count;
+                else
+                {
+                    if (value >= 0) selectPastCommand = value;
+                    else selectPastCommand = 0;
+                }
+            }
         }
     }
 }

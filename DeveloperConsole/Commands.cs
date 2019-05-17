@@ -165,15 +165,15 @@ namespace DeveloperConsole
         public override bool Run(string[] inputParams)
         {
             VehicleHash vehicleHash = VehicleHash.Adder;
-            if (Enum.TryParse<VehicleHash>(inputParams[1], out vehicleHash)) Program.console.AppendLog(inputParams[1] + " Hash: " + ((uint)vehicleHash).ToString());
+            if (Enum.TryParse<VehicleHash>(inputParams[1], out vehicleHash)) Program.console.log.AppendLog(inputParams[1] + " Hash: " + ((uint)vehicleHash).ToString());
             else
             {
                 PedHash pedHash = PedHash.Abigail;
-                if (Enum.TryParse<PedHash>(inputParams[1], out pedHash)) Program.console.AppendLog(inputParams[1] + " Hash: " + ((uint)pedHash).ToString());
+                if (Enum.TryParse<PedHash>(inputParams[1], out pedHash)) Program.console.log.AppendLog(inputParams[1] + " Hash: " + ((uint)pedHash).ToString());
                 else
                 {
                     WeaponHash weaponHash = WeaponHash.AdvancedRifle;
-                    if (Enum.TryParse<WeaponHash>(inputParams[1], out weaponHash)) Program.console.AppendLog(inputParams[1] + " Hash: " + ((uint)pedHash).ToString());
+                    if (Enum.TryParse<WeaponHash>(inputParams[1], out weaponHash)) Program.console.log.AppendLog(inputParams[1] + " Hash: " + ((uint)pedHash).ToString());
                     else
                     {
                         return false;
@@ -202,7 +202,7 @@ namespace DeveloperConsole
 
         public override bool Run(string[] inputParams)
         {
-            Program.console.ClearLogs();
+            Program.console.log.ClearLogs();
             return true;
         }
     }
