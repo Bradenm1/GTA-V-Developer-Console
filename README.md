@@ -3,7 +3,7 @@
 A developer console for Grand Theft Auto 5 (PC) using Community Script Hook V .NET. 
 This mod adds a menu to the game allow the user to input command and params to execute certain events in-game.
 
-![alt text](http://bradenmckewen.com/img/projects/gta-v-mods/console.jpg "Gamemode Header Image")
+![alt text](http://www.bradenmckewen.com/img/projects/gta-v-mods/console.jpg "Console Header Image")
 
 ### Installation:
 ---
