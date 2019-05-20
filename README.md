@@ -19,3 +19,7 @@ This mod adds a menu to the game allow the user to input command and params to e
 * 'Tab' autofill to the console given the hint below the console
 * 'Delete' delete characters
 * 'Use Help <CommandName>' to see what a command does and what params it takes
+  
+## Disclaimer
+---
+I'm not liable if you get banned as a result of using this. It's meant for Single Player.
