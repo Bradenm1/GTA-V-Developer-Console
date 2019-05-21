@@ -20,7 +20,7 @@ namespace DeveloperConsole
 
         public Input(Point position, float textSize = 0.3f)
         {
-            this.inputText = new UIText("", position, textSize);
+            this.inputText = new UIText(string.Empty, position, textSize);
             CreateHints(new Point(position.X + 10, position.Y + 16), textSize);
         }
 
@@ -86,7 +86,7 @@ namespace DeveloperConsole
         {
             for (int i = 0; i < textHints.Length; i++)
             {
-                textHints[i].Caption = "";
+                textHints[i].Caption = string.Empty;
             }
         }
 

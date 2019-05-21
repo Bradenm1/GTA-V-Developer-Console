@@ -14,7 +14,7 @@ namespace DeveloperConsole
 {
     public class Commands
     {
-        public Command[] allCommands = new Command[27];
+        public Command[] allCommands = new Command[30];
 
         public Commands()
         {
@@ -52,6 +52,9 @@ namespace DeveloperConsole
                 allCommands[24] = new SetPosition();
                 allCommands[25] = new Fix();
                 allCommands[26] = new SetVehicleGodeMode();
+                allCommands[27] = new SetVehiclePrimaryColour();
+                allCommands[28] = new SetVehicleSecondaryColour();
+                allCommands[29] = new SetVehicleMod();
             }
             catch
             {
@@ -164,6 +167,40 @@ namespace DeveloperConsole
         {
             Game.Player.LastVehicle.Repair();
             return true;
+        }
+    }
+
+    /// <summary>
+    /// Set a mod for a vehicle
+    /// </summary>
+    public class SetVehicleMod : Command
+    {
+        private int modIndex = 0;
+        private bool variations = false;
+
+        public SetVehicleMod()
+        {
+            commandName = "setvehiclemod";
+            shortName = "svm";
+            help = "Set Vehicles Mod. Params -> [VehicleMod, ModIndex, Variations(Bool)]";
+            autoFill.Add(HintType.VehicleMod);
+        }
+
+        public override bool Run(string[] inputParams)
+        {
+            VehicleMod vehicleMod = VehicleMod.Aerials;
+            if (inputParams.Length > 2) int.TryParse(inputParams[2], out modIndex);
+            if (inputParams.Length > 3) bool.TryParse(inputParams[3], out variations);
+            if (Enum.TryParse<VehicleMod>(inputParams[1], out vehicleMod))
+            {
+                Game.Player.LastVehicle.SetMod(vehicleMod, modIndex, variations);
+                return true;
+            }
+            else
+            {
+                Game.Player.LastVehicle.SetMod((VehicleMod)int.Parse(inputParams[1]), modIndex, variations);
+                return true;
+            }
         }
     }
 
@@ -477,6 +514,69 @@ namespace DeveloperConsole
             if (inputParams.Length > 2) float.TryParse(inputParams[2], out y);
             if (inputParams.Length > 3) float.TryParse(inputParams[3], out z);
             Game.Player.Character.Position = new Vector3(x, y, z);
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// Base class for setting car colour
+    /// </summary>
+    public abstract class SetVehicleColourBase : Command
+    {
+        public SetVehicleColourBase()
+        {
+            help = "Change the vehicles colour. Params -> [Alpha, R, G, B]";
+        }
+
+        public override bool Run(string[] inputParams)
+        {
+            int a = Game.Player.LastVehicle.CustomPrimaryColor.A;
+            int r = Game.Player.LastVehicle.CustomPrimaryColor.R;
+            int g = Game.Player.LastVehicle.CustomPrimaryColor.G;
+            int b = Game.Player.LastVehicle.CustomPrimaryColor.B;
+
+            if (inputParams.Length > 1) int.TryParse(inputParams[1], out a);
+            if (inputParams.Length > 2) int.TryParse(inputParams[2], out r);
+            if (inputParams.Length > 3) int.TryParse(inputParams[3], out g);
+            if (inputParams.Length > 4) int.TryParse(inputParams[4], out b);
+            return Run(Color.FromArgb(a, r, g, b));
+        }
+
+        public abstract bool Run(Color color);
+    }
+
+    /// <summary>
+    /// Set Vehicle Primary Colour
+    /// </summary>
+    public class SetVehiclePrimaryColour : SetVehicleColourBase
+    {
+        public SetVehiclePrimaryColour()
+        {
+            commandName = "setvehicleprimarycolour";
+            shortName = "svpc";
+        }
+
+        public override bool Run(Color color)
+        {
+            Game.Player.LastVehicle.CustomPrimaryColor = color;
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// Set Vehicle Primary Colour
+    /// </summary>
+    public class SetVehicleSecondaryColour : SetVehicleColourBase
+    {
+        public SetVehicleSecondaryColour()
+        {
+            commandName = "setvehiclesecondarycolour";
+            shortName = "svsc";
+        }
+
+        public override bool Run(Color color)
+        {
+            Game.Player.LastVehicle.CustomSecondaryColor = color;
             return true;
         }
     }

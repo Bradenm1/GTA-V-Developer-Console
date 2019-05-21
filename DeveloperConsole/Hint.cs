@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 
 namespace DeveloperConsole
 {
+    public enum HintType { Vehicle = 0, Pickup, Ped, Command, Weather, Weapon, OnOff, VehicleMod };
     public class Hint
     {
-        public enum HintType { Vehicle = 0, Pickup, Ped, Command, Weather, Weapon, OnOff };
         public static List<string> vehicles = new List<string>();
         public static List<string> pickups = new List<string>();
         public static List<string> peds = new List<string>();
         public static List<string> commands = new List<string>();
         public static List<string> weapons = new List<string>();
+        public static List<string> vehicleMod = new List<string>();
         public static string[] onOff = new string[] { "on", "off" };
         public static List<string> weathers;
 
@@ -49,6 +50,9 @@ namespace DeveloperConsole
                             break;
                         case HintType.Weapon:
                             hints = Find(currentParam, weapons);
+                            break;
+                        case HintType.VehicleMod:
+                            hints = Find(currentParam, vehicleMod);
                             break;
                         default:
                             break;
@@ -96,6 +100,7 @@ namespace DeveloperConsole
             AppendPedToAutoCorrect(Enum.GetNames(typeof(PedHash)));
             AppendPickupToAutoCorrect(Enum.GetNames(typeof(PickupType)));
             AppendWeaponToAutoCorrect(Enum.GetNames(typeof(WeaponHash)));
+            AppendVehicleModToAutoCorrect(Enum.GetNames(typeof(VehicleMod)));
             weathers = AppendToAutoCorrect(Enum.GetNames(typeof(Weather)));
             for (int i = 0; i < Program.commands.allCommands.Length; i++)
             {
@@ -147,6 +152,15 @@ namespace DeveloperConsole
             {
                 weapons.Add(names[i]);
                 weapons.Add(((uint)((WeaponHash)Enum.Parse(typeof(WeaponHash), names[i]))).ToString());
+            }
+        }
+
+        private static void AppendVehicleModToAutoCorrect(string[] names)
+        {
+            for (int i = 0; i < names.Length; i++)
+            {
+                vehicleMod.Add(names[i]);
+                vehicleMod.Add(((uint)((VehicleMod)Enum.Parse(typeof(VehicleMod), names[i]))).ToString());
             }
         }
     }
