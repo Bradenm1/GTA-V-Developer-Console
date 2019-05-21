@@ -16,16 +16,16 @@ namespace DeveloperConsole
 
         public Log(Point position, Size size, float textSize, int edgeWidth)
         {
-            CreateLogs(new Point(position.X + edgeWidth, size.Height - 10), textSize);
+            CreateLogs(new Point(position.X + edgeWidth, size.Height), textSize);
         }
 
         private void CreateLogs(Point position, float textSize)
         {
             logs = new UIText[((position.Y - MARGIN) / MARGIN)];
-            logs[0] = new UIText(Program.emptyString, new Point(position.X, position.Y - MARGIN), textSize);
+            logs[0] = new UIText(string.Empty, new Point(position.X, position.Y - MARGIN), textSize);
             for (int i = 1, o = 24; i < logs.Length; i++, o += MARGIN)
             {
-                logs[i] = new UIText(Program.emptyString, new Point(position.X, position.Y - o), textSize);
+                logs[i] = new UIText(string.Empty, new Point(position.X, position.Y - o), textSize);
             }
         }
 
@@ -50,7 +50,7 @@ namespace DeveloperConsole
         {
             for (int i = 0; i < logs.Length; i++)
             {
-                logs[i].Caption = Program.emptyString;
+                logs[i].Caption = string.Empty;
             }
         }
     }

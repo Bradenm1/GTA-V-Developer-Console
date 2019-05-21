@@ -8,13 +8,13 @@ namespace DeveloperConsole
 {
     public class Program : Script
     {
-        public const string emptyString = "";
         public const string spaceString = " ";
 
         public static Console console;
         public static Commands commands;
 
         public static bool usingConsole = false;
+        public static bool contolsDisabled = true;
         public static bool shiftBeingHeld = false;
 
         public static Random random = new Random();
@@ -29,14 +29,14 @@ namespace DeveloperConsole
             set
             {
                 usingConsole = value;
-                console.input.inputText.Caption = "";
+                console.input.ClearInput();
             }
         }
 
         public Program()
         {
             commands = new Commands();
-            console = new Console(new Point(10, 10), new Size(Game.ScreenResolution.Width - 20, 128), Color.FromArgb(85, 120, 120, 120));
+            console = new Console(new Point(10, 10), new Size(500, 128), Color.FromArgb(150, 120, 120, 120));
             Hint.PopulateHints();
             this.Tick += onTick;
             this.KeyUp += onKeyUp;
@@ -47,8 +47,9 @@ namespace DeveloperConsole
         {
             if (UsingConsole)
             {
-                Game.DisableAllControlsThisFrame(1);
+                if (contolsDisabled) Game.DisableAllControlsThisFrame(1);
                 console.Draw();
+                console.RunCursor();
             }
         }
 

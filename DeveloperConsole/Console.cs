@@ -9,9 +9,13 @@ namespace DeveloperConsole
 {
     public class Console
     {
+        private const string consoleName = "Developer Console:";
+
         // Design
         private UIText consoleHeaderText;
+        private UIText consoleInputText;
         private UIContainer consoleContainer;
+        private UIContainer consoleInputContainer;
         private UIRectangle[] edges = new UIRectangle[4];
 
         public Input input;
@@ -22,8 +26,10 @@ namespace DeveloperConsole
         public Console(Point position, Size size, Color color, float textSize = 0.3f, int edgeWdith = 4)
         {
             this.consoleContainer = new UIContainer(position, size, color);
-            this.consoleHeaderText = new UIText("Developer Console", new Point(position.X + edgeWdith, position.Y), textSize, Color.Black);
-            this.input = new Input(new Point(position.X + edgeWdith, size.Height - 10), textSize);
+            this.consoleHeaderText = new UIText(consoleName, new Point(position.X + edgeWdith, position.Y), textSize);
+            this.consoleInputContainer = new UIContainer(new Point(position.X, position.Y + size.Height + edgeWdith), new Size(size.Width, 16), color);
+            this.consoleInputText = new UIText("--", new Point(position.X, position.Y + size.Height + 4), textSize);
+            this.input = new Input(new Point(position.X + 12, position.Y + size.Height + 4), textSize);
             this.log = new Log(position, size, textSize, edgeWdith);
             CreateFrame(position, size, color, edgeWdith);
         }
@@ -37,11 +43,18 @@ namespace DeveloperConsole
             edges[3] = new UIRectangle(new Point(position.X, position.Y + size.Height - width), new Size(size.Width, width), color);
         }
 
+        public void RunCursor()
+        {
+            input.RunSelection();
+        }
+
         public void Draw()
         {
             consoleHeaderText.Draw();
             input.Draw();
+            consoleInputText.Draw();
             log.DrawLogs();
+            consoleInputContainer.Draw();
             DrawFrame();
             consoleContainer.Draw();
         }
@@ -54,31 +67,19 @@ namespace DeveloperConsole
             }
         }
 
-        private const string helpName = "help";
-        private const string commandNotExist = "Command does not exist!";
+        private const string commandNotExist = "command does not exist!";
         private const string commandFailed = "Command Failed!";
         public void RunCommand(string[] inputParams)
         {
-            if (inputParams[0].ToLower().Equals(helpName))
+            Command command = Program.commands.FindCommand(inputParams[0].ToLower());
+            if (command == null)
             {
-                Command command = Program.commands.FindCommand(inputParams[1].ToLower());
-                if (command == null)
-                    log.AppendLog(commandNotExist);
-                else
-                    log.AppendLog(inputParams[1] + Program.spaceString + command.GetHelp());
+                log.AppendLog(inputParams[0] + Program.spaceString + commandNotExist);
             }
             else
             {
-                Command command = Program.commands.FindCommand(inputParams[0].ToLower());
-                if (command == null)
-                {
-                    log.AppendLog(inputParams[0] + Program.spaceString + commandNotExist);
-                }
-                else
-                {
-                    log.AppendLog(string.Join(Program.spaceString, inputParams));
-                    if (!command.RunCommnad(inputParams)) log.AppendLog(commandFailed);
-                }
+                log.AppendLog(string.Join(Program.spaceString, inputParams));
+                if (!command.RunCommnad(inputParams)) log.AppendLog(commandFailed);
             }
         }
     }

@@ -10,38 +10,84 @@ namespace DeveloperConsole
 {
     public class Hint
     {
+        public enum HintType { Vehicle = 0, Pickup, Ped, Command, Weather, Weapon, OnOff };
         public static List<string> vehicles = new List<string>();
         public static List<string> pickups = new List<string>();
         public static List<string> peds = new List<string>();
         public static List<string> commands = new List<string>();
+        public static List<string> weapons = new List<string>();
+        public static string[] onOff = new string[] { "on", "off" };
         public static List<string> weathers;
 
-        public static string FindHinds(string command)
+        public static string[] FindHinds(string command, string currentParam, int index)
         {
-            string hint;
-            hint = Find(command, vehicles);
-            if (!hint.Equals(Program.emptyString)) return hint;
-            hint = Find(command, pickups);
-            if (!hint.Equals(Program.emptyString)) return hint;
-            hint = Find(command, peds);
-            if (!hint.Equals(Program.emptyString)) return hint;
-            hint = Find(command, commands);
-            if (!hint.Equals(Program.emptyString)) return hint;
-            hint = Find(command, weathers);
-            return hint;
-        }
-
-        public static string Find(string command, List<string> list)
-        {
-            string hint = Program.emptyString;
-            foreach (string value in list)
+            string[] hints = null;
+            if (index > 1)
             {
-                if (!value.Equals(Program.emptyString) && value.IndexOf(command, StringComparison.OrdinalIgnoreCase) >= 0)
+                Command foundCommand = Program.commands.FindCommand(command.ToLower());
+                if (foundCommand != null && foundCommand.autoFill.Count <= (index - 1))
                 {
-                    hint = value;
+                    switch (foundCommand.autoFill[index - 2])
+                    {
+                        case HintType.Vehicle:
+                            hints = Find(currentParam, vehicles);
+                            break;
+                        case HintType.Pickup:
+                            hints = Find(currentParam, pickups);
+                            break;
+                        case HintType.Ped:
+                            hints = Find(currentParam, peds);
+                            break;
+                        case HintType.Command:
+                            hints = Find(currentParam, commands);
+                            break;
+                        case HintType.Weather:
+                            hints = Find(currentParam, weathers);
+                            break;
+                        case HintType.OnOff:
+                            hints = Find(currentParam, onOff);
+                            break;
+                        case HintType.Weapon:
+                            hints = Find(currentParam, weapons);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
-            return hint;
+            else
+            {
+                hints = Find(command, commands);
+            }
+            return hints;
+        }
+
+        public static string[] Find(string command, List<string> list)
+        {
+            string[] hints = Enumerable.Repeat(string.Empty, Program.console.input.textHints.Length).ToArray();
+            for(int i = 0, o = 0; i < list.Count; i++)
+            {
+                if ((o < hints.Length) && (list[i].ToLower().Contains(command.ToLower())))
+                {
+                    hints[o] = list[i];
+                    o++;
+                }
+            }
+            return hints;
+        }
+
+        public static string[] Find(string command, string[] list)
+        {
+            string[] hints = Enumerable.Repeat(string.Empty, Program.console.input.textHints.Length).ToArray();
+            for (int i = 0, o = 0; i < list.Length; i++)
+            {
+                if ((o < hints.Length) && (list[i].ToLower().Contains(command.ToLower())))
+                {
+                    hints[o] = list[i];
+                    o++;
+                }
+            }
+            return hints;
         }
 
         public static void PopulateHints()
@@ -49,10 +95,12 @@ namespace DeveloperConsole
             AppendVehicleToAutoCorrect(Enum.GetNames(typeof(VehicleHash)));
             AppendPedToAutoCorrect(Enum.GetNames(typeof(PedHash)));
             AppendPickupToAutoCorrect(Enum.GetNames(typeof(PickupType)));
+            AppendWeaponToAutoCorrect(Enum.GetNames(typeof(WeaponHash)));
             weathers = AppendToAutoCorrect(Enum.GetNames(typeof(Weather)));
             for (int i = 0; i < Program.commands.allCommands.Length; i++)
             {
                 commands.Add(Program.commands.allCommands[i].commandName);
+                commands.Add(Program.commands.allCommands[i].shortName);
             }
         }
 
@@ -90,6 +138,15 @@ namespace DeveloperConsole
             {
                 pickups.Add(names[i]);
                 pickups.Add(((uint)((PickupType)Enum.Parse(typeof(PickupType), names[i]))).ToString());
+            }
+        }
+
+        private static void AppendWeaponToAutoCorrect(string[] names)
+        {
+            for (int i = 0; i < names.Length; i++)
+            {
+                weapons.Add(names[i]);
+                weapons.Add(((uint)((WeaponHash)Enum.Parse(typeof(WeaponHash), names[i]))).ToString());
             }
         }
     }
