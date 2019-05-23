@@ -14,7 +14,7 @@ namespace DeveloperConsole
 {
     public class Commands
     {
-        public static Command[] allCommands = new Command[30];
+        public static Command[] allCommands;
 
         public Commands()
         {
@@ -23,42 +23,16 @@ namespace DeveloperConsole
 
         private void RegisterCommands()
         {
-            try
+            IEnumerable<Type> subclassTypes = Assembly
+               .GetAssembly(typeof(Command))
+               .GetTypes()
+               .Where(t => t.IsSubclassOf(typeof(Command)));
+            allCommands = new Command[subclassTypes.LongCount()];
+            int index = 0;
+            foreach (Type type in subclassTypes)
             {
-                allCommands[0] = new SpawnCar();
-                allCommands[1] = new Clear();
-                allCommands[2] = new GetHash();
-                allCommands[3] = new SpawnPickup();
-                allCommands[4] = new SpawnPed();
-                allCommands[5] = new ClearWantedLevel();
-                allCommands[6] = new SetWantedLevel();
-                allCommands[7] = new Explode();
-                allCommands[8] = new ChangeWeather();
-                allCommands[9] = new SetTimeScale();
-                allCommands[10] = new SetNightVision();
-                allCommands[11] = new SetThermalVision();
-                allCommands[12] = new SetMoney();
-                allCommands[13] = new SetTime();
-                allCommands[14] = new ChangePlayerSkin();
-                allCommands[15] = new Help();
-                allCommands[16] = new SetWeather();
-                allCommands[17] = new SetControlInConsole();
-                allCommands[18] = new KillAllPeps();
-                allCommands[19] = new KillAllVehicles();
-                allCommands[20] = new Frenzy();
-                allCommands[21] = new SetGodeMode();
-                allCommands[22] = new AllWeapons();
-                allCommands[23] = new AddWeapon();
-                allCommands[24] = new SetPosition();
-                allCommands[25] = new Fix();
-                allCommands[26] = new SetVehicleGodeMode();
-                allCommands[27] = new SetVehiclePrimaryColour();
-                allCommands[28] = new SetVehicleSecondaryColour();
-                allCommands[29] = new SetVehicleMod();
-            }
-            catch
-            {
-                Program.console.log.AppendLog("There was an error registering the commands!");
+                allCommands[index] = (Command)Activator.CreateInstance(type);
+                index++;
             }
         }
 
@@ -79,12 +53,12 @@ namespace DeveloperConsole
                 case "player":
                     return (Entity)Game.Player.Character;
                 case "crosshair":
-                        RaycastResult ray = World.GetCrosshairCoordinates();
+                    RaycastResult ray = World.GetCrosshairCoordinates();
 
-                        if (ray.DitHitAnything)
-                        {
-                            return ray.HitEntity;
-                        }
+                    if (ray.DitHitAnything)
+                    {
+                        return ray.HitEntity;
+                    }
                     break;
                 default:
                     return null;
@@ -136,7 +110,7 @@ namespace DeveloperConsole
 
         public override bool Run(string[] inputParams)
         {
-            
+
             if (inputParams.Length == 2)
             {
                 Command command = Program.commands.FindCommand(inputParams[1].ToLower());
@@ -518,17 +492,9 @@ namespace DeveloperConsole
         }
     }
 
-    /// <summary>
-    /// Base class for setting car colour
-    /// </summary>
-    public abstract class SetVehicleColourBase : Command
+    public class GetVehicleColourBase
     {
-        public SetVehicleColourBase()
-        {
-            help = "Change the vehicles colour. Params -> [Alpha, R, G, B]";
-        }
-
-        public override bool Run(string[] inputParams)
+        public static Color Get(string[] inputParams)
         {
             int a = Game.Player.LastVehicle.CustomPrimaryColor.A;
             int r = Game.Player.LastVehicle.CustomPrimaryColor.R;
@@ -539,26 +505,25 @@ namespace DeveloperConsole
             if (inputParams.Length > 2) int.TryParse(inputParams[2], out r);
             if (inputParams.Length > 3) int.TryParse(inputParams[3], out g);
             if (inputParams.Length > 4) int.TryParse(inputParams[4], out b);
-            return Run(Color.FromArgb(a, r, g, b));
+            return Color.FromArgb(a, r, g, b);
         }
-
-        public abstract bool Run(Color color);
     }
 
     /// <summary>
     /// Set Vehicle Primary Colour
     /// </summary>
-    public class SetVehiclePrimaryColour : SetVehicleColourBase
+    public class SetVehiclePrimaryColour : Command
     {
         public SetVehiclePrimaryColour()
         {
             commandName = "setvehicleprimarycolour";
             shortName = "svpc";
+            help = "Change the vehicles colour. Params -> [Alpha, R, G, B]";
         }
 
-        public override bool Run(Color color)
+        public override bool Run(string[] inputParams)
         {
-            Game.Player.LastVehicle.CustomPrimaryColor = color;
+            Game.Player.LastVehicle.CustomPrimaryColor = GetVehicleColourBase.Get(inputParams);
             return true;
         }
     }
@@ -566,17 +531,18 @@ namespace DeveloperConsole
     /// <summary>
     /// Set Vehicle Primary Colour
     /// </summary>
-    public class SetVehicleSecondaryColour : SetVehicleColourBase
+    public class SetVehicleSecondaryColour : Command
     {
         public SetVehicleSecondaryColour()
         {
             commandName = "setvehiclesecondarycolour";
             shortName = "svsc";
+            help = "Change the vehicles colour. Params -> [Alpha, R, G, B]";
         }
 
-        public override bool Run(Color color)
+        public override bool Run(string[] inputParams)
         {
-            Game.Player.LastVehicle.CustomSecondaryColor = color;
+            Game.Player.LastVehicle.CustomSecondaryColor = GetVehicleColourBase.Get(inputParams);
             return true;
         }
     }

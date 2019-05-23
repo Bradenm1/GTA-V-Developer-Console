@@ -85,6 +85,7 @@ namespace DeveloperConsole
                 commands.Add(Commands.allCommands[i].commandName);
                 commands.Add(Commands.allCommands[i].shortName);
             }
+            UI.Notify("DONE HINTS");
         }
 
         public static Dictionary<string, string> EnumNamedValues<T>() where T : System.Enum
