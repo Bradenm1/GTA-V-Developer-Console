@@ -14,7 +14,7 @@ namespace DeveloperConsole
 {
     public class Commands
     {
-        public Command[] allCommands = new Command[30];
+        public static Command[] allCommands = new Command[30];
 
         public Commands()
         {
