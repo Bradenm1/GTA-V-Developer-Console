@@ -6,21 +6,21 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using static DeveloperConsole.Hint;
 
 namespace DeveloperConsole
 {
     public class Commands
     {
-        public static Command[] allCommands;
+        public static Command[] allCommands; // All the commands within the console
 
         public Commands()
         {
             RegisterCommands();
         }
 
+        /// <summary>
+        /// Create the command instances given the childs of the Command class
+        /// </summary>
         private void RegisterCommands()
         {
             IEnumerable<Type> subclassTypes = Assembly
@@ -36,6 +36,11 @@ namespace DeveloperConsole
             }
         }
 
+        /// <summary>
+        /// Returns a command given the command name
+        /// </summary>
+        /// <param name="commandName"></param>
+        /// <returns></returns>
         public Command FindCommand(string commandName)
         {
             for (int i = 0; i < allCommands.Length; i++)

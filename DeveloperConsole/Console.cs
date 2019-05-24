@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 using GTA;
-using GTA.Native;
 
 namespace DeveloperConsole
 {
@@ -19,10 +16,18 @@ namespace DeveloperConsole
         private UIRectangle[] edges = new UIRectangle[4];
 
         public Input input;
-        public Log log;
-        public List<string> fullLog = new List<string>();
+        public Log log; // The log for the console
+        public List<string> fullLog = new List<string>(); // The log for the commands entered
         public Entity selectedEntity;
 
+        /// <summary>
+        /// Contructor
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="size"></param>
+        /// <param name="color"></param>
+        /// <param name="textSize"></param>
+        /// <param name="edgeWdith"></param>
         public Console(Point position, Size size, Color color, float textSize = 0.3f, int edgeWdith = 4)
         {
             this.consoleContainer = new UIContainer(position, size, color);
@@ -34,6 +39,13 @@ namespace DeveloperConsole
             CreateFrame(position, size, color, edgeWdith);
         }
 
+        /// <summary>
+        /// Create the border around the console
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="size"></param>
+        /// <param name="color"></param>
+        /// <param name="width"></param>
         private void CreateFrame(Point position, Size size, Color color, int width)
         {
             color = Color.FromArgb(color.A + 80, color.R + 80, color.G + 80, color.B + 80);
@@ -43,11 +55,17 @@ namespace DeveloperConsole
             edges[3] = new UIRectangle(new Point(position.X, position.Y + size.Height - width), new Size(size.Width, width), color);
         }
 
+        /// <summary>
+        /// Run the cursor for the input
+        /// </summary>
         public void RunCursor()
         {
             input.RunSelection();
         }
 
+        /// <summary>
+        /// Draw the console
+        /// </summary>
         public void Draw()
         {
             consoleHeaderText.Draw();
@@ -59,6 +77,9 @@ namespace DeveloperConsole
             consoleContainer.Draw();
         }
 
+        /// <summary>
+        /// Draw the frame for the console
+        /// </summary>
         private void DrawFrame()
         {
             for (int i = 0; i < edges.Length; i++)
@@ -69,6 +90,10 @@ namespace DeveloperConsole
 
         private const string commandNotExist = "command does not exist!";
         private const string commandFailed = "Command Failed!";
+        /// <summary>
+        /// Run a command given the params
+        /// </summary>
+        /// <param name="inputParams"></param>
         public void RunCommand(string[] inputParams)
         {
             Command command = Program.commands.FindCommand(inputParams[0].ToLower());
