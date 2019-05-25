@@ -36,7 +36,7 @@ namespace DeveloperConsole
         {
             commands = new Commands();
             console = new Console(new Point(10, 10), new Size(500, 128), Color.FromArgb(150, 120, 120, 120));
-            Hint.PopulateHints();
+            HintValues.PopulateHints();
 
             // Queue events
             this.Tick += onTick;

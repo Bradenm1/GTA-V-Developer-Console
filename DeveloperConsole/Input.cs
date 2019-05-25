@@ -12,11 +12,11 @@ namespace DeveloperConsole
 {
     public class Input
     {
+        public Hint hint;
         public UIText inputText;
-        public UIText[] textHints = new UIText[7];
         public int selectedIndex = 0; // Selected position for the cursor within the input
         public int selectPastCommand = 0; // The select command in the history
-        public int blinkingTick = 35; // The blinking rate for the cursor
+        public int blinkingTick = 25; // The blinking rate for the cursor
 
         /// <summary>
         /// Constructor
@@ -26,7 +26,7 @@ namespace DeveloperConsole
         public Input(Point position, float textSize = 0.3f)
         {
             this.inputText = new UIText(string.Empty, position, textSize);
-            CreateHints(new Point(position.X + 10, position.Y + 16), textSize);
+            this.hint = new Hint(new Point(position.X + 10, position.Y + 16), textSize);
         }
 
         /// <summary>
@@ -34,32 +34,8 @@ namespace DeveloperConsole
         /// </summary>
         public void Draw()
         {
-            DrawHints();
+            hint.DrawHints();
             inputText.Draw();
-        }
-
-        /// <summary>
-        /// Draws the hints
-        /// </summary>
-        public void DrawHints()
-        {
-            for (int i = 0; i < textHints.Length; i++)
-            {
-                textHints[i].Draw();
-            }
-        }
-
-        /// <summary>
-        /// Creates the hints
-        /// </summary>
-        /// <param name="position"></param>
-        /// <param name="textSize"></param>
-        public void CreateHints(Point position, float textSize = 0.3f)
-        {
-            for (int i = 0, o = 0; i < textHints.Length; i++, o += 12)
-            {
-                textHints[i] = new UIText(string.Empty, new Point(position.X, position.Y + o), textSize);
-            }
         }
 
         /// <summary>
@@ -82,47 +58,6 @@ namespace DeveloperConsole
             SelectedIndex -= 1;
         }
 
-        /// <summary>
-        /// Clear the input of the cursor and run the hint
-        /// </summary>
-        /// <param name="command"></param>
-        public void RunHintString(string command)
-        {
-            if (command.Contains('|')) command = command.Remove(inputText.Caption.IndexOf('|'), 1);
-            RunHint(TrimParams(command.Split(' ')));
-        }
-
-        /// <summary>
-        /// Run the hints given the input params
-        /// </summary>
-        /// <param name="consoleParams"></param>
-        public void RunHint(string[] consoleParams)
-        {
-            string[] hints = Hint.FindHinds(consoleParams[0], consoleParams[consoleParams.Length - 1], consoleParams.Length);
-            if (hints != null && !hints[0].Equals(string.Empty))
-            {
-                for (int i = 0; i < textHints.Length; i++)
-                {
-                    if (hints[i] != null)
-                    {
-                        textHints[i].Caption = hints[i];
-                    }
-                }
-            } else {
-                ClearHints();
-            }
-        }
-
-        /// <summary>
-        /// Clear the hints from the screen
-        /// </summary>
-        public void ClearHints()
-        {
-            for (int i = 0; i < textHints.Length; i++)
-            {
-                textHints[i].Caption = string.Empty;
-            }
-        }
 
         /// <summary>
         /// Clear the input string
@@ -133,21 +68,7 @@ namespace DeveloperConsole
             SelectedIndex = 0;
             SelectPastCommand = 0;
             blinkingTick = 35;
-            ClearHints();
-        }
-
-        /// <summary>
-        /// Trim the input param of all spaces
-        /// </summary>
-        /// <param name="trimParams"></param>
-        /// <returns></returns>
-        public string[] TrimParams(string[] trimParams)
-        {
-            for (int i = 0; i < trimParams.Length; i++)
-            {
-                trimParams[i] = trimParams[i].Trim();
-            }
-            return trimParams;
+            hint.ClearHints();
         }
 
         /// <summary>
@@ -164,33 +85,17 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Convert an arry of strings to a string
-        /// </summary>
-        /// <param name="array"></param>
-        /// <returns></returns>
-        private static string ConvertStringArrayToString(string[] array)
-        {
-            StringBuilder builder = new StringBuilder();
-            foreach (string value in array)
-            {
-                builder.Append(value);
-                builder.Append(' ');
-            }
-            return builder.ToString();
-        }
-
-        /// <summary>
         /// Run the cursor for the input
         /// </summary>
         public void RunSelection()
         {
-            if (blinkingTick == 10 && inputText.Caption.Contains('|')) inputText.Caption = inputText.Caption.Remove(inputText.Caption.IndexOf('|'), 1);
+            if (blinkingTick == 35) inputText.Caption = inputText.Caption.Insert(selectedIndex, "|");
             else
             {
-                if (blinkingTick == 35) inputText.Caption = inputText.Caption.Insert(selectedIndex, "|");
-                else
+                if (blinkingTick > 35)
                 {
-                    if (blinkingTick > 35) blinkingTick = 0;
+                    inputText.Caption = inputText.Caption.Remove(inputText.Caption.IndexOf('|'), 1);
+                    blinkingTick = 0;
                 }
             }
             blinkingTick++;
@@ -217,7 +122,7 @@ namespace DeveloperConsole
                     string number = Enum.GetName(typeof(Keys), key);
                     number = number.Remove(0, 1);
                     AppendInput(number);
-                    RunHintString(inputText.Caption);
+                    hint.RunHintString(inputText.Caption);
                     break;
                 case Keys.A:
                 case Keys.B:
@@ -248,30 +153,30 @@ namespace DeveloperConsole
                     string character = Enum.GetName(typeof(Keys), key);
                     character = Program.shiftBeingHeld ? character : character.ToLower();
                     AppendInput(character);
-                    RunHintString(inputText.Caption);
+                    hint.RunHintString(inputText.Caption);
                     break;
                 case Keys.Back:
                 case Keys.Delete:
                     DeleteLastCharacter();
-                    RunHintString(inputText.Caption);
+                    hint.RunHintString(inputText.Caption);
                     break;
                 case Keys.Space:
                     AppendInput(" ");
-                    RunHintString(inputText.Caption);
+                    hint.RunHintString(inputText.Caption);
                     break;
                 case Keys.Return:
                     if (inputText.Caption.Contains('|')) inputText.Caption = inputText.Caption.Remove(inputText.Caption.IndexOf('|'), 1);
                     Program.console.fullLog.Add(inputText.Caption);
-                    Program.console.RunCommand(TrimParams(inputText.Caption.Split(' ')));
+                    Program.console.RunCommand(Utilities.TrimStringArray(inputText.Caption.Split(' ')));
                     ClearInput();
                     break;
                 case Keys.Tab:
                     if (inputText.Caption.Contains('|')) inputText.Caption = inputText.Caption.Remove(inputText.Caption.IndexOf('|'), 1);
-                    string[] consoleParams = TrimParams(inputText.Caption.Split(' '));
-                    consoleParams[consoleParams.Length - 1] = textHints[0].Caption;
-                    inputText.Caption = ConvertStringArrayToString(consoleParams).Trim();
+                    string[] consoleParams = Utilities.TrimStringArray(inputText.Caption.Split(' '));
+                    consoleParams[consoleParams.Length - 1] = hint.textHints[0].Caption;
+                    inputText.Caption = Utilities.ConvertStringArrayToString(consoleParams).Trim();
                     SelectedIndex = inputText.Caption.Length;
-                    RunHintString(inputText.Caption);
+                    hint.RunHintString(inputText.Caption);
                     break;
                 case Keys.Right:
                     SelectedIndex += 1;
